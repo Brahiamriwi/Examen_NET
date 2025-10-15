@@ -1,0 +1,129 @@
+@model IEnumerable<Examen_NET.Models.Patient>
+
+@{
+    ViewData["Title"] = "Pacientes";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2><i class="bi bi-people"></i> Lista de Pacientes</h2>
+    <div>
+        <a asp-action="Create" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> Nuevo Paciente
+        </a>
+        
+        <!-- TOGGLE PARA MOSTRAR INACTIVOS -->
+        @{
+            var showInactive = ViewBag.ShowInactive ?? false;
+        }
+        @if (showInactive)
+        {
+            <a asp-action="Index" asp-route-showInactive="false" class="btn btn-success">
+                <i class="bi bi-arrow-left-circle"></i> Ver Activos
+            </a>
+        }
+        else
+        {
+            <a asp-action="Index" asp-route-showInactive="true" class="btn btn-secondary">
+                <i class="bi bi-archive"></i> Ver Inactivos
+            </a>
+        }
+    </div>
+</div>
+
+@if (Model == null || !Model.Any())
+{
+    <div class="alert alert-info">
+        <i class="bi bi-info-circle"></i> 
+        @if (showInactive)
+        {
+            <text>No hay pacientes inactivos.</text>
+        }
+        else
+        {
+            <text>No hay pacientes activos registrados.</text>
+            <a asp-action="Create" class="alert-link">Crear el primero</a>
+        }
+    </div>
+}
+{
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Estado</th>
+                            <th>Nombre Completo</th>
+                            <th>Documento</th>
+                            <th>Edad</th>
+                            <th>Teléfono</th>
+                            <th>Email</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var patient in Model)
+                        {
+                            <tr class="@(!patient.IsActive ? "table-secondary" : "")">
+                                <td>
+                                    @if (patient.IsActive)
+                                    {
+                                        <span class="badge bg-success">Activo</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">Inactivo</span>
+                                    }
+                                </td>
+                                <td>
+                                    <i class="bi bi-person-circle text-primary"></i> @patient.FullName
+                                </td>
+                                <td>@patient.DocumentNumber</td>
+                                <td>@patient.Age años</td>
+                                <td>
+                                    <i class="bi bi-telephone"></i> @patient.Phone
+                                </td>
+                                <td>
+                                    <i class="bi bi-envelope"></i> @patient.Email
+                                </td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <a asp-action="Details" asp-route-id="@patient.Id" 
+                                           class="btn btn-sm btn-info text-white" title="Ver detalles">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        
+                                        @if (patient.IsActive)
+                                        {
+                                            <a asp-action="Edit" asp-route-id="@patient.Id" 
+                                               class="btn btn-sm btn-warning" title="Editar">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+                                            <a asp-action="Deactivate" asp-route-id="@patient.Id" 
+                                               class="btn btn-sm btn-danger" title="Desactivar">
+                                                <i class="bi bi-x-circle"></i>
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            <form asp-action="Reactivate" asp-route-id="@patient.Id" method="post" class="d-inline">
+                                                @Html.AntiForgeryToken()
+                                                <button type="submit" class="btn btn-sm btn-success" title="Reactivar" 
+                                                        onclick="return confirm('¿Reactivar este paciente?')">
+                                                    <i class="bi bi-arrow-clockwise"></i>
+                                                </button>
+                                            </form>
+                                        }
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <p class="text-muted mb-0">
+                <i class="bi bi-info-circle"></i> Total de pacientes: <strong>@Model.Count()</strong>
+            </p>
+        </div>
+    </div>
+}

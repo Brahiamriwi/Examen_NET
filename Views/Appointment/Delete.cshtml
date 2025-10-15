@@ -1,0 +1,104 @@
+@model Examen_NET.Models.Appointment
+
+@{
+    ViewData["Title"] = "Eliminar Cita";
+}
+
+<h2 class="text-danger"><i class="bi bi-exclamation-triangle"></i> Eliminar Cita Médica</h2>
+<hr />
+
+<div class="alert alert-warning">
+    <h5><i class="bi bi-exclamation-triangle"></i> ¿Está seguro que desea eliminar esta cita?</h5>
+    <p>Esta acción eliminará permanentemente el registro de la cita y su historial de correo asociado.</p>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0"><i class="bi bi-calendar-event"></i> Información de la Cita</h5>
+            </div>
+            <div class="card-body">
+                <dl class="row">
+                    <dt class="col-sm-4">Paciente:</dt>
+                    <dd class="col-sm-8">
+                        <i class="bi bi-person-circle"></i> @Model.Patient?.FullName
+                        <br>
+                        <small class="text-muted">Doc: @Model.Patient?.DocumentNumber</small>
+                    </dd>
+
+                    <dt class="col-sm-4">Médico:</dt>
+                    <dd class="col-sm-8">
+                        <i class="bi bi-person-badge"></i> Dr. @Model.Doctor?.FullName
+                        <br>
+                        <small class="text-muted">@Model.Doctor?.Specialty</small>
+                    </dd>
+
+                    <dt class="col-sm-4">Fecha:</dt>
+                    <dd class="col-sm-8">
+                        <i class="bi bi-calendar"></i> @Model.AppointmentDate.ToString("dddd, dd 'de' MMMM 'de' yyyy")
+                    </dd>
+
+                    <dt class="col-sm-4">Hora:</dt>
+                    <dd class="col-sm-8">
+                        <i class="bi bi-clock"></i> @DateTime.Today.Add(Model.AppointmentTime).ToString("hh:mm tt")
+                    </dd>
+
+                    <dt class="col-sm-4">Estado:</dt>
+                    <dd class="col-sm-8">
+                        @if (Model.Status == "Scheduled")
+                        {
+                            <span class="badge bg-success fs-6">Programada</span>
+                        }
+                        else if (Model.Status == "Completed")
+                        {
+                            <span class="badge bg-primary fs-6">Atendida</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-danger fs-6">Cancelada</span>
+                        }
+                    </dd>
+                </dl>
+
+                <form asp-action="Delete">
+                    <input type="hidden" asp-for="Id" />
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-danger">
+                            <i class="bi bi-trash"></i> Confirmar Eliminación
+                        </button>
+                        <a asp-action="Index" class="btn btn-secondary">
+                            <i class="bi bi-x-circle"></i> Cancelar
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Panel lateral con advertencia -->
+    <div class="col-md-4">
+        <div class="card border-danger">
+            <div class="card-header bg-danger text-white">
+                <h6 class="mb-0"><i class="bi bi-exclamation-triangle"></i> Advertencia</h6>
+            </div>
+            <div class="card-body">
+                <p class="mb-2">
+                    <strong>Esta acción:</strong>
+                </p>
+                <ul class="mb-0">
+                    <li>Eliminará permanentemente la cita</li>
+                    <li>Eliminará el historial de correo asociado</li>
+                    <li>No se puede deshacer</li>
+                </ul>
+                <hr>
+                <div class="alert alert-info mb-0">
+                    <small>
+                        <i class="bi bi-lightbulb"></i> 
+                        <strong>Alternativa:</strong> Si solo deseas cancelar la cita, usa el botón "Cancelar Cita" en la vista de detalles.
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

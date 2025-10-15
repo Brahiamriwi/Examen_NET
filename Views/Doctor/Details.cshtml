@@ -1,0 +1,105 @@
+@model Examen_NET.Models.Doctor
+
+@{
+    ViewData["Title"] = "Detalles del Médico";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2><i class="bi bi-person-badge text-success"></i> Detalles del Médico</h2>
+    <div>
+        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-success">
+            <i class="bi bi-pencil"></i> Editar
+        </a>
+        <a asp-action="Index" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Volver
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <!-- INFORMACIÓN PERSONAL -->
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0"><i class="bi bi-info-circle"></i> Información Personal</h5>
+            </div>
+            <div class="card-body">
+                <dl class="row">
+                    <dt class="col-sm-4">Nombre Completo:</dt>
+                    <dd class="col-sm-8">@Model.FullName</dd>
+
+                    <dt class="col-sm-4">Documento:</dt>
+                    <dd class="col-sm-8">@Model.DocumentNumber</dd>
+
+                    <!-- ⭐ ESPECIALIDAD - DIFERENCIA PRINCIPAL -->
+                    <dt class="col-sm-4">Especialidad:</dt>
+                    <dd class="col-sm-8">
+                        <span class="badge bg-info fs-6">@Model.Specialty</span>
+                    </dd>
+
+                    <dt class="col-sm-4">Teléfono:</dt>
+                    <dd class="col-sm-8">
+                        <i class="bi bi-telephone"></i> @Model.Phone
+                    </dd>
+
+                    <dt class="col-sm-4">Email:</dt>
+                    <dd class="col-sm-8">
+                        <i class="bi bi-envelope"></i> @Model.Email
+                    </dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+
+    <!-- HISTORIAL DE CITAS -->
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0"><i class="bi bi-calendar-check"></i> Agenda de Citas</h5>
+            </div>
+            <div class="card-body">
+                @if (Model.Appointments != null && Model.Appointments.Any())
+                {
+                    <div class="list-group">
+                        @foreach (var appointment in Model.Appointments.OrderByDescending(a => a.AppointmentDate))
+                        {
+                            <a asp-controller="Appointment" asp-action="Details" asp-route-id="@appointment.Id" 
+                               class="list-group-item list-group-item-action">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <!-- ⭐ MUESTRA PACIENTE en lugar de DOCTOR -->
+                                    <h6 class="mb-1">
+                                        <i class="bi bi-person-circle"></i> @appointment.Patient?.FullName
+                                    </h6>
+                                    <small>
+                                        @if (appointment.Status == "Scheduled")
+                                        {
+                                            <span class="badge bg-success">Programada</span>
+                                        }
+                                        else if (appointment.Status == "Completed")
+                                        {
+                                            <span class="badge bg-primary">Atendida</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-danger">Cancelada</span>
+                                        }
+                                    </small>
+                                </div>
+                                <p class="mb-1">
+                                    <i class="bi bi-calendar"></i> @appointment.AppointmentDate.ToString("dd/MM/yyyy")
+                                    <i class="bi bi-clock ms-2"></i> @appointment.AppointmentTime.ToString(@"hh\:mm")
+                                </p>
+                            </a>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="alert alert-info mb-0">
+                        <i class="bi bi-info-circle"></i> No hay citas registradas para este médico.
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

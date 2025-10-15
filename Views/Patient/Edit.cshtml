@@ -1,0 +1,68 @@
+@model Examen_NET.Models.Patient
+
+@{
+    ViewData["Title"] = "Editar Paciente";
+}
+
+<h2><i class="bi bi-pencil-square"></i> Editar Paciente</h2>
+<hr />
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-body">
+                <form asp-action="Edit">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+                    <input type="hidden" asp-for="Id" />
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="FullName" class="form-label"></label>
+                            <input asp-for="FullName" class="form-control" />
+                            <span asp-validation-for="FullName" class="text-danger"></span>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="DocumentNumber" class="form-label"></label>
+                            <input asp-for="DocumentNumber" class="form-control" />
+                            <span asp-validation-for="DocumentNumber" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="Age" class="form-label"></label>
+                            <input asp-for="Age" class="form-control" type="number" min="1" max="120" />
+                            <span asp-validation-for="Age" class="text-danger"></span>
+                        </div>
+                        
+                        <div class="col-md-8 mb-3">
+                            <label asp-for="Phone" class="form-label"></label>
+                            <input asp-for="Phone" class="form-control" />
+                            <span asp-validation-for="Phone" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Email" class="form-label"></label>
+                        <input asp-for="Email" class="form-control" />
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-warning">
+                            <i class="bi bi-check-circle"></i> Actualizar
+                        </button>
+                        <a asp-action="Index" class="btn btn-secondary">
+                            <i class="bi bi-x-circle"></i> Cancelar
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

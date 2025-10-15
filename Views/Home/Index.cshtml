@@ -1,0 +1,69 @@
+﻿@{
+    ViewData["Title"] = "Inicio";
+}
+
+<div class="text-center">
+    <h1 class="display-4">
+        <i class="bi bi-hospital text-primary"></i> 
+        Hospital San Vicente
+    </h1>
+    <p class="lead">Sistema de Gestión de Citas Médicas</p>
+</div>
+
+<div class="row mt-5">
+    <div class="col-md-4">
+        <div class="card border-primary mb-3">
+            <div class="card-body text-center">
+                <i class="bi bi-people display-1 text-primary"></i>
+                <h5 class="card-title mt-3">Pacientes</h5>
+                <p class="card-text">Gestiona la información de los pacientes del hospital</p>
+                <a asp-controller="Patient" asp-action="Index" class="btn btn-primary">
+                    <i class="bi bi-arrow-right-circle"></i> Ver Pacientes
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card border-success mb-3">
+            <div class="card-body text-center">
+                <i class="bi bi-person-badge display-1 text-success"></i>
+                <h5 class="card-title mt-3">Médicos</h5>
+                <p class="card-text">Administra el personal médico y sus especialidades</p>
+                <a asp-controller="Doctor" asp-action="Index" class="btn btn-success">
+                    <i class="bi bi-arrow-right-circle"></i> Ver Médicos
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card border-info mb-3">
+            <div class="card-body text-center">
+                <i class="bi bi-calendar-check display-1 text-info"></i>
+                <h5 class="card-title mt-3">Citas Médicas</h5>
+                <p class="card-text">Programa y gestiona las citas médicas</p>
+                <a asp-controller="Appointment" asp-action="Index" class="btn btn-info text-white">
+                    <i class="bi bi-arrow-right-circle"></i> Ver Citas
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card bg-light">
+            <div class="card-body">
+                <h5><i class="bi bi-info-circle"></i> Funcionalidades del Sistema</h5>
+                <ul class="mb-0">
+                    <li>Registro y gestión completa de pacientes</li>
+                    <li>Administración de médicos y especialidades</li>
+                    <li>Programación de citas con validación de horarios</li>
+                    <li>Notificaciones por correo electrónico</li>
+                    <li>Historial de citas por paciente y médico</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>

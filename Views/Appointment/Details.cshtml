@@ -1,0 +1,166 @@
+@model Examen_NET.Models.Appointment
+
+@{
+    ViewData["Title"] = "Detalles de la Cita";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2><i class="bi bi-calendar-event"></i> Detalles de la Cita</h2>
+    <div>
+        @if (Model.Status == "Scheduled")
+        {
+            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">
+                <i class="bi bi-pencil"></i> Editar
+            </a>
+        }
+        <a asp-action="Index" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Volver
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card mb-3">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0"><i class="bi bi-info-circle"></i> Información de la Cita</h5>
+            </div>
+            <div class="card-body">
+                <dl class="row">
+                    <dt class="col-sm-4">Paciente:</dt>
+                    <dd class="col-sm-8">
+                        <i class="bi bi-person-circle"></i>
+                        <a asp-controller="Patient" asp-action="Details" asp-route-id="@Model.PatientId">
+                            @Model.Patient?.FullName
+                        </a>
+                    </dd>
+
+                    <dt class="col-sm-4">Médico:</dt>
+                    <dd class="col-sm-8">
+                        <i class="bi bi-person-badge"></i>
+                        <a asp-controller="Doctor" asp-action="Details" asp-route-id="@Model.DoctorId">
+                            Dr. @Model.Doctor?.FullName
+                        </a>
+                    </dd>
+
+                    <dt class="col-sm-4">Especialidad:</dt>
+                    <dd class="col-sm-8">
+                        <span class="badge bg-info">@Model.Doctor?.Specialty</span>
+                    </dd>
+
+                    <dt class="col-sm-4">Fecha:</dt>
+                    <dd class="col-sm-8">
+                        <i class="bi bi-calendar"></i> @Model.AppointmentDate.ToString("dddd, dd 'de' MMMM 'de' yyyy")
+                    </dd>
+
+                    <dt class="col-sm-4">Hora:</dt>
+                    <dd class="col-sm-8">
+                        <i class="bi bi-clock"></i> @DateTime.Today.Add(Model.AppointmentTime).ToString("hh:mm tt")
+                    </dd>
+                    
+                    <dt class="col-sm-4">Estado:</dt>
+                    <dd class="col-sm-8">
+                        @if (Model.Status == "Scheduled")
+                        {
+                            <span class="badge bg-success fs-6">Programada</span>
+                        }
+                        else if (Model.Status == "Completed")
+                        {
+                            <span class="badge bg-primary fs-6">Atendida</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-danger fs-6">Cancelada</span>
+                        }
+                    </dd>
+                </dl>
+            </div>
+        </div>
+
+        <!-- Acciones de Estado -->
+        @if (Model.Status == "Scheduled")
+        {
+            <div class="card border-warning">
+                <div class="card-header bg-warning">
+                    <h6 class="mb-0"><i class="bi bi-gear"></i> Acciones</h6>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Complete" asp-route-id="@Model.Id" method="post" class="d-inline">
+                        <button type="submit" class="btn btn-primary" onclick="return confirm('¿Marcar esta cita como atendida?')">
+                            <i class="bi bi-check-circle"></i> Marcar como Atendida
+                        </button>
+                    </form>
+                    <form asp-action="Cancel" asp-route-id="@Model.Id" method="post" class="d-inline">
+                        <button type="submit" class="btn btn-danger" onclick="return confirm('¿Cancelar esta cita?')">
+                            <i class="bi bi-x-circle"></i> Cancelar Cita
+                        </button>
+                    </form>
+                    <!-- ⭐ NOTA INFORMATIVA -->
+                    <div class="alert alert-info mt-3 mb-0">
+                        <i class="bi bi-info-circle"></i> 
+                        <small>
+                            <strong>Nota:</strong> Las citas no se eliminan del sistema para mantener el historial médico completo. 
+                            Si la cita fue agendada por error, use "Cancelar Cita".
+                        </small>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0"><i class="bi bi-envelope"></i> Historial de Correo</h5>
+            </div>
+            <div class="card-body">
+                @if (Model.EmailHistory != null)
+                {
+                    <dl class="row">
+                        <dt class="col-sm-4">Estado:</dt>
+                        <dd class="col-sm-8">
+                            @if (Model.EmailHistory.Status == "Sent")
+                            {
+                                <span class="badge bg-success">
+                                    <i class="bi bi-check-circle"></i> Enviado
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-danger">
+                                    <i class="bi bi-x-circle"></i> Error
+                                </span>
+                            }
+                        </dd>
+
+                        <dt class="col-sm-4">Fecha de Envío:</dt>
+                        <dd class="col-sm-8">
+                            <i class="bi bi-calendar-check"></i> @Model.EmailHistory.SentDate.ToLocalTime().ToString("dd/MM/yyyy HH:mm:ss")
+                        </dd>
+
+                        <dt class="col-sm-4">Destinatario:</dt>
+                        <dd class="col-sm-8">
+                            <i class="bi bi-envelope"></i> @Model.Patient?.Email
+                        </dd>
+
+                        @if (!string.IsNullOrEmpty(Model.EmailHistory.ErrorMessage))
+                        {
+                            <dt class="col-sm-4">Error:</dt>
+                            <dd class="col-sm-8">
+                                <div class="alert alert-danger mb-0">
+                                    @Model.EmailHistory.ErrorMessage
+                                </div>
+                            </dd>
+                        }
+                    </dl>
+                }
+                else
+                {
+                    <div class="alert alert-info mb-0">
+                        <i class="bi bi-info-circle"></i> No se ha enviado correo de confirmación para esta cita.
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,177 @@
+@model IEnumerable<Examen_NET.Models.Appointment>
+
+@{
+    ViewData["Title"] = "Citas Médicas";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>
+        <i class="bi bi-calendar-check"></i> 
+        @if (ViewBag.FilterTitle != null)
+        {
+            @ViewBag.FilterTitle
+        }
+        else
+        {
+            <text>Todas las Citas Médicas</text>
+        }
+    </h2>
+    <a asp-action="Create" class="btn btn-info text-white">
+        <i class="bi bi-plus-circle"></i> Nueva Cita
+    </a>
+</div>
+
+<!-- ⭐ FILTROS AGREGADOS -->
+<div class="card mb-3">
+    <div class="card-body">
+        <form method="get" asp-action="Index" class="row g-3">
+            <div class="col-md-4">
+                <label class="form-label">Filtrar por Paciente:</label>
+                <select name="patientId" class="form-select">
+                    <option value="">-- Todos los pacientes --</option>
+                    @if (ViewBag.Patients != null)
+                    {
+                        foreach (var patient in ViewBag.Patients)
+                        {
+                            <option value="@patient.Id" selected="@(patient.Id.ToString() == Context.Request.Query["patientId"])">
+                                @patient.FullName
+                            </option>
+                        }
+                    }
+                </select>
+            </div>
+            
+            <div class="col-md-4">
+                <label class="form-label">Filtrar por Médico:</label>
+                <select name="doctorId" class="form-select">
+                    <option value="">-- Todos los médicos --</option>
+                    @if (ViewBag.Doctors != null)
+                    {
+                        foreach (var doctor in ViewBag.Doctors)
+                        {
+                            <option value="@doctor.Id" selected="@(doctor.Id.ToString() == Context.Request.Query["doctorId"])">
+                                Dr. @doctor.FullName
+                            </option>
+                        }
+                    }
+                </select>
+            </div>
+            
+            <div class="col-md-4 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary me-2">
+                    <i class="bi bi-filter"></i> Filtrar
+                </button>
+                @if (Context.Request.Query.ContainsKey("patientId") || Context.Request.Query.ContainsKey("doctorId"))
+                {
+                    <a asp-action="Index" class="btn btn-secondary">
+                        <i class="bi bi-x-circle"></i> Limpiar
+                    </a>
+                }
+            </div>
+        </form>
+    </div>
+</div>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">
+        <i class="bi bi-info-circle"></i> No hay citas registradas.
+        <a asp-action="Create" class="alert-link">Crear la primera</a>
+    </div>
+}
+else
+{
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Paciente</th>
+                            <th>Médico</th>
+                            <th>Fecha</th>
+                            <th>Hora</th>
+                            <th>Estado</th>
+                            <th>Correo</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var appointment in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <i class="bi bi-person-circle"></i>
+                                    <a asp-controller="Patient" asp-action="Details" asp-route-id="@appointment.PatientId">
+                                        @appointment.Patient?.FullName
+                                    </a>
+                                </td>
+                                <td>
+                                    <i class="bi bi-person-badge"></i>
+                                    <a asp-controller="Doctor" asp-action="Details" asp-route-id="@appointment.DoctorId">
+                                        Dr. @appointment.Doctor?.FullName
+                                    </a>
+                                </td>
+                                <td>
+                                    <i class="bi bi-calendar"></i> @appointment.AppointmentDate.ToString("dd/MM/yyyy")
+                                </td>
+                                <td>
+                                    <i class="bi bi-clock"></i> @DateTime.Today.Add(appointment.AppointmentTime).ToString("hh:mm tt")
+                                </td>
+                                <td>
+                                    @if (appointment.Status == "Scheduled")
+                                    {
+                                        <span class="badge bg-success">Programada</span>
+                                    }
+                                    else if (appointment.Status == "Completed")
+                                    {
+                                        <span class="badge bg-primary">Atendida</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-danger">Cancelada</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (appointment.EmailHistory != null)
+                                    {
+                                        @if (appointment.EmailHistory.Status == "Sent")
+                                        {
+                                            <i class="bi bi-check-circle text-success" title="Enviado"></i>
+                                        }
+                                        else
+                                        {
+                                            <i class="bi bi-x-circle text-danger" title="Error"></i>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <i class="bi bi-dash-circle text-muted" title="No enviado"></i>
+                                    }
+                                </td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <a asp-action="Details" asp-route-id="@appointment.Id" 
+                                           class="btn btn-sm btn-info text-white" title="Ver detalles">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        @if (appointment.Status == "Scheduled")
+                                        {
+                                            <a asp-action="Edit" asp-route-id="@appointment.Id" 
+                                               class="btn btn-sm btn-warning" title="Editar">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+                                        }
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <p class="text-muted mb-0">
+                <i class="bi bi-info-circle"></i> Total de citas: <strong>@Model.Count()</strong>
+            </p>
+        </div>
+    </div>
+}

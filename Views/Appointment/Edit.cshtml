@@ -1,0 +1,142 @@
+@model Examen_NET.Models.Appointment
+
+@{
+    ViewData["Title"] = "Editar Cita";
+}
+
+<h2><i class="bi bi-pencil-square"></i> Editar Cita Médica</h2>
+<hr />
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-body">
+                <form asp-action="Edit">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+                    
+                    <!-- ⭐ CAMPOS OCULTOS NECESARIOS -->
+                    <input type="hidden" asp-for="Id" />
+                    <input type="hidden" asp-for="Status" />
+                    
+                    <div class="mb-3">
+                        <label asp-for="PatientId" class="form-label"></label>
+                        <select asp-for="PatientId" class="form-select" asp-items="ViewBag.PatientId">
+                            <option value="">-- Seleccione un paciente --</option>
+                        </select>
+                        <span asp-validation-for="PatientId" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="DoctorId" class="form-label"></label>
+                        <select asp-for="DoctorId" class="form-select" asp-items="ViewBag.DoctorId">
+                            <option value="">-- Seleccione un médico --</option>
+                        </select>
+                        <span asp-validation-for="DoctorId" class="text-danger"></span>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="AppointmentDate" class="form-label"></label>
+                            <input asp-for="AppointmentDate" class="form-control" type="date" />
+                            <span asp-validation-for="AppointmentDate" class="text-danger"></span>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="AppointmentTime" class="form-label"></label>
+                            <input asp-for="AppointmentTime" id="timePickerEdit" class="form-control" type="text" 
+                                   placeholder="Seleccione hora" readonly />
+                            <span asp-validation-for="AppointmentTime" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Estado Actual:</label>
+                        <div>
+                            @if (Model.Status == "Scheduled")
+                            {
+                                <span class="badge bg-success fs-6">Programada</span>
+                            }
+                            else if (Model.Status == "Completed")
+                            {
+                                <span class="badge bg-primary fs-6">Atendida</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-danger fs-6">Cancelada</span>
+                            }
+                        </div>
+                        <small class="text-muted">
+                            El estado solo puede cambiarse desde la vista de detalles con las acciones correspondientes.
+                        </small>
+                    </div>
+
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle"></i> 
+                        <strong>Nota:</strong> El sistema validará que ni el médico ni el paciente tengan otra cita en el mismo horario.
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-warning">
+                            <i class="bi bi-check-circle"></i> Actualizar Cita
+                        </button>
+                        <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-secondary">
+                            <i class="bi bi-x-circle"></i> Cancelar
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Panel lateral con información -->
+    <div class="col-md-4">
+        <div class="card bg-light">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-info-circle"></i> Información</h6>
+            </div>
+            <div class="card-body">
+                <p class="mb-2">
+                    <strong>ID de la Cita:</strong><br>
+                    <small class="text-muted">#@Model.Id</small>
+                </p>
+                <p class="mb-0">
+                    <strong>Estado:</strong><br>
+                    @if (Model.Status == "Scheduled")
+                    {
+                        <span class="badge bg-success">Programada</span>
+                    }
+                    else if (Model.Status == "Completed")
+                    {
+                        <span class="badge bg-primary">Atendida</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-danger">Cancelada</span>
+                    }
+                </p>
+                <hr>
+                <small class="text-muted">
+                    <i class="bi bi-lightbulb"></i> 
+                    Solo puedes editar fecha, hora, médico y paciente. Para cambiar el estado, ve a Detalles.
+                </small>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    
+    <script>
+        // ⭐ FLATPICKR para EDITAR (con ID diferente)
+        flatpickr("#timePickerEdit", {
+            enableTime: true,
+            noCalendar: true,
+            dateFormat: "H:i",      
+            time_24hr: false,        
+            minuteIncrement: 15,     
+            defaultHour: 9,          
+            allowInput: false        
+        });
+    </script>
+}
