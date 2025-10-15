@@ -618,8 +618,6 @@ Cancelled → [Final]    ❌ (cannot change)
     - Integration with external systems
 
 ---
-## 🖼️ Screenshots
-
 ### 🧩 Use Case Diagram 1
 ![Use Case Diagram 1](./Docs/Screenshots/Diagram_Use_Case_1.png)
 
